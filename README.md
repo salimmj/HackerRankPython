@@ -1,1 +1,3 @@
 # HackerRankPython
+
+Just for fun!
