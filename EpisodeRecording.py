@@ -2,14 +2,17 @@
 
 from collections import defaultdict
 
+
 def make_dict():
     return defaultdict(make_dict)
+
 
 def ddict2dict(d):
     for k, v in d.items():
         if isinstance(v, dict):
             d[k] = ddict2dict(v)
     return dict(d)
+
 
 s = defaultdict(make_dict)
 
@@ -27,80 +30,153 @@ for i in range(seasons):
 
 s = ddict2dict(s)
 
+
 class Tree(object):
     def __init__(self):
         self.live = None
         self.repeat = None
         self.data = None
 
+
 def isInRange(ep, rng):
-
-    i=0
+    i = 0
     while ep['start'] <= rng[i]['end']:
-        i +=1
+        i += 1
 
-    if ep['end'] < rng[i+1]['start']:
+    if ep['end'] < rng[i + 1]['start']:
         return True
     else:
         return False
 
-def getMaxInterval(root, i, j, rng=None): #make root before calling
-    if rng is None and j is None:
+def getMaxInterval(root, i, j, length, rng=None):  # make root before calling
+    if j < length:
+        if rng is None:
 
-        root.live = Tree()
-        rngl = rng.append(s[i][j]['live'])
-        root.live.data = getMaxInterval(root.live, i, rng, j+1)
+            rng = []
 
-        root.repeat = Tree()
-        rngr = rng.append(s[i][j]['repeat'])
-        root.repeat.data = getMaxInterval(root.repeat, i, rng, j+1)
-
-        return max(len(root.live.data), len(root.repeat.data))
-    else:
-        #recursiveness
-        bl = isInRange(s[i][j]['live'], rng)
-        br = isInRange(s[i][j]['repeat'], rng)
-        if bl and br:
             root.live = Tree()
-            rngl = list(rng)
-            rngl.append(s[i][j]['live'])
-            root.live.data = getMaxInterval(root.live, i, rngl, j+1)
+            print(j)
+            rngl = rng.append(s[i][j]['live'])
+            root.live.data = getMaxInterval(root.live, i, j+1, length, rngl)
 
             root.repeat = Tree()
-            rngr = list(rng)
-            rngr.append(s[i][j]['repeat'])
-            root.repeat.data = getMaxInterval(root.repeat, i, rngr, j+1)
+            rngr = rng.append(s[i][j]['repeat'])
+            root.repeat.data = getMaxInterval(root.repeat, i, j+1, length, rngr)
 
             ll = len(root.live.data)
             rl = len(root.repeat.data)
 
             if ll > rl:
                 return root.live.data
-            else:
-                return root.repeat.data
-
-        elif bl:
-            root.live = Tree()
-            rng.append(s[i][j]['live'])
-            root.live.data = getMaxInterval(root.live, i, rng, j+1)
-
-            return root.live.data
-        elif br:
-            root.repeat = Tree()
-            rng.append(s[i][j]['repeat'])
-            root.repeat.data = getMaxInterval(root.repeat, i, rng, j+1)
 
             return root.repeat.data
         else:
+            # recursiveness
+            bl = isInRange(s[i][j]['live'], rng)
+            br = isInRange(s[i][j]['repeat'], rng)
+            if bl and br:
+                root.live = Tree()
+                rngl = list(rng)
+                rngl.append(s[i][j]['live'])
+                root.live.data = getMaxInterval(root.live, i, j+1, length, rngl)
+
+                root.repeat = Tree()
+                rngr = list(rng)
+                rngr.append(s[i][j]['repeat'])
+                root.repeat.data = getMaxInterval(root.repeat, i, j+1, length, rngr)
+
+                ll = len(root.live.data)
+                rl = len(root.repeat.data)
+
+                if ll > rl:
+                    return root.live.data
+
+                return root.repeat.data
+
+            elif bl:
+                root.live = Tree()
+                rng.append(s[i][j]['live'])
+                sorted(rng, key=lambda epp: epp['start'])
+                root.live.data = getMaxInterval(root.live, i, j+1, length, rng)
+
+                return root.live.data
+            elif br:
+                root.repeat = Tree()
+                rng.append(s[i][j]['repeat'])
+                sorted(rng, key=lambda epp: epp['start'])
+                root.repeat.data = getMaxInterval(root.repeat, i, j+1, length, rng)
+
+                return root.repeat.data
+
             return rng
 
+    return rng
 
-    #to sort sorted(student_tuples, key=lambda student: student[2])
+"""
+def getMaxInterval(root, i, j, length, rng=None):  # make root before calling
+    if rng is None:
 
-def findR(i, j, length, st = None):
+        rng = []
+
+        root.live = Tree()
+        print(j)
+        rngl = rng.append(s[i][j]['live'])
+        root.live.data = getMaxInterval(root.live, i, j+1, length, rngl)
+
+        root.repeat = Tree()
+        rngr = rng.append(s[i][j]['repeat'])
+        root.repeat.data = getMaxInterval(root.repeat, i, j+1, length, rngr)
+
+        return max(len(root.live.data), len(root.repeat.data))
+    else:
+        if j < length:
+            # recursiveness
+            bl = isInRange(s[i][j]['live'], rng)
+            br = isInRange(s[i][j]['repeat'], rng)
+            if bl and br:
+                root.live = Tree()
+                rngl = list(rng)
+                rngl.append(s[i][j]['live'])
+                root.live.data = getMaxInterval(root.live, i, j+1, length, rngl)
+
+                root.repeat = Tree()
+                rngr = list(rng)
+                rngr.append(s[i][j]['repeat'])
+                root.repeat.data = getMaxInterval(root.repeat, i, j+1, length, rngr)
+
+                ll = len(root.live.data)
+                rl = len(root.repeat.data)
+
+                if ll > rl:
+                    return root.live.data
+                else:
+                    return root.repeat.data
+
+            elif bl:
+                root.live = Tree()
+                rng.append(s[i][j]['live'])
+                sorted(rng, key=lambda epp: epp['start'])
+                root.live.data = getMaxInterval(root.live, i, j+1, length, rng)
+
+                return root.live.data
+            elif br:
+                root.repeat = Tree()
+                rng.append(s[i][j]['repeat'])
+                sorted(rng, key=lambda epp: epp['start'])
+                root.repeat.data = getMaxInterval(root.repeat, i, j+1, length, rng)
+
+                return root.repeat.data
+            else:
+                return rng
+
+        else:
+            return rng"""
+
+
+def findR(i, j, length, st=None):
     if st is None:
         end = min(s[i][j]['live']['end'], s[i][j]['repeat']['end'])
-        return findR(i, j+1, length, end)
+        return findR(i, j + 1, length, end)
     else:
         if j >= length:
             return j
@@ -117,7 +193,7 @@ def findR(i, j, length, st = None):
                 else:
                     end = s[i][j]['repeat']['end']
 
-                return findR(i, j+1, length, end)
+                return findR(i, j + 1, length, end)
 
             else:
 
@@ -128,15 +204,14 @@ diffs = []
 
 for i in range(len(s)):
     for j in range(len(s[i])):
-
         root = Tree()
 
-        rng = getMaxInterval(root, i, j)
+        rng = getMaxInterval(root, i, j, len(s[i]))
 
         diffs.append(len(rng))
 
     m = max(diffs)
     x = diffs.index(m)
 
-    print('{x} {y}'.format(x=x+1, y= x+m -1))
+    print('{x} {y}'.format(x=x + 1, y=x + m - 1))
     diffs = []
