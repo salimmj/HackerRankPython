@@ -55,7 +55,7 @@ def getMaxInterval(root, i, j, rng=None): #make root before calling
         rngr = rng.append(s[i][j]['repeat'])
         root.repeat.data = getMaxInterval(root.repeat, i, rng, j+1)
 
-        return max(len(root.live), len(root.repeat))
+        return max(len(root.live.data), len(root.repeat.data))
     else:
         #recursiveness
         bl = isInRange(s[i][j]['live'], rng)
@@ -71,16 +71,28 @@ def getMaxInterval(root, i, j, rng=None): #make root before calling
             rngr.append(s[i][j]['repeat'])
             root.repeat.data = getMaxInterval(root.repeat, i, rngr, j+1)
 
-            return max(len(root.live.data), len(root.repeat.data))
+            ll = len(root.live.data)
+            rl = len(root.repeat.data)
+
+            if ll > rl:
+                return root.live.data
+            else:
+                return root.repeat.data
+
         elif bl:
             root.live = Tree()
             rng.append(s[i][j]['live'])
             root.live.data = getMaxInterval(root.live, i, rng, j+1)
+
+            return root.live.data
         elif br:
+            root.repeat = Tree()
             rng.append(s[i][j]['repeat'])
-            actualdata = getMaxInterval(i, repeat)
+            root.repeat.data = getMaxInterval(root.repeat, i, rng, j+1)
+
+            return root.repeat.data
         else:
-            return that episode
+            return rng
 
 
     #to sort sorted(student_tuples, key=lambda student: student[2])
@@ -112,21 +124,19 @@ def findR(i, j, length, st = None):
                 return j
 
 
-LtoR = {}
 diffs = []
 
 for i in range(len(s)):
     for j in range(len(s[i])):
 
-        LtoR[j] = findR(i, j, len(s[i]))
+        root = Tree()
 
-        diffs.append(LtoR[j] - j-1)
+        rng = getMaxInterval(root, i, j)
 
-        if len(s[i])-j-1 <= max(diffs):
-            break
+        diffs.append(len(rng))
 
-    x = diffs.index(max(diffs))
+    m = max(diffs)
+    x = diffs.index(m)
 
-    print('{x} {y}'.format(x=x+1, y=LtoR[x]))
-    LtoR = {}
+    print('{x} {y}'.format(x=x+1, y= x+m -1))
     diffs = []
