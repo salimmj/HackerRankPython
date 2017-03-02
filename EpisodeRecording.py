@@ -27,6 +27,7 @@ for i in range(seasons):
 
 s = ddict2dict(s)
 
+
 def findR(i, j, length, st = None):
     if st is None:
         end = min(s[i][j]['live']['end'], s[i][j]['repeat']['end'])
@@ -51,17 +52,24 @@ def findR(i, j, length, st = None):
 
             else:
 
-                return j+1
+                return j
 
 
 LtoR = {}
 diffs = []
 
-for i in range(int(seasons)):
+for i in range(len(s)):
     for j in range(len(s[i])):
+
         LtoR[j] = findR(i, j, len(s[i]))
 
-        diffs[j] = LtoR[j] - j
+        diffs.append(LtoR[j] - j-1)
 
-    x = diffs.index(min(diffs))
-    print(x + ' ' + LtoR[x])
+        if len(s[i])-j-1 <= max(diffs):
+            break
+
+    x = diffs.index(max(diffs))
+
+    print('{x} {y}'.format(x=x+1, y=LtoR[x]))
+    LtoR = {}
+    diffs = []
