@@ -27,6 +27,63 @@ for i in range(seasons):
 
 s = ddict2dict(s)
 
+class Tree(object):
+    def __init__(self):
+        self.live = None
+        self.repeat = None
+        self.data = None
+
+def isInRange(ep, rng):
+
+    i=0
+    while ep['start'] <= rng[i]['end']:
+        i +=1
+
+    if ep['end'] < rng[i+1]['start']:
+        return True
+    else:
+        return False
+
+def getMaxInterval(root, i, j, rng=None): #make root before calling
+    if rng is None and j is None:
+
+        root.live = Tree()
+        rngl = rng.append(s[i][j]['live'])
+        root.live.data = getMaxInterval(root.live, i, rng, j+1)
+
+        root.repeat = Tree()
+        rngr = rng.append(s[i][j]['repeat'])
+        root.repeat.data = getMaxInterval(root.repeat, i, rng, j+1)
+
+        return max(len(root.live), len(root.repeat))
+    else:
+        #recursiveness
+        bl = isInRange(s[i][j]['live'], rng)
+        br = isInRange(s[i][j]['repeat'], rng)
+        if bl and br:
+            root.live = Tree()
+            rngl = list(rng)
+            rngl.append(s[i][j]['live'])
+            root.live.data = getMaxInterval(root.live, i, rngl, j+1)
+
+            root.repeat = Tree()
+            rngr = list(rng)
+            rngr.append(s[i][j]['repeat'])
+            root.repeat.data = getMaxInterval(root.repeat, i, rngr, j+1)
+
+            return max(len(root.live.data), len(root.repeat.data))
+        elif bl:
+            root.live = Tree()
+            rng.append(s[i][j]['live'])
+            root.live.data = getMaxInterval(root.live, i, rng, j+1)
+        elif br:
+            rng.append(s[i][j]['repeat'])
+            actualdata = getMaxInterval(i, repeat)
+        else:
+            return that episode
+
+
+    #to sort sorted(student_tuples, key=lambda student: student[2])
 
 def findR(i, j, length, st = None):
     if st is None:
