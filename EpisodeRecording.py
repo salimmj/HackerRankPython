@@ -1,5 +1,25 @@
 # https://www.hackerrank.com/challenges/episode-recording
 
+"""
+sample input:
+3
+3
+10 20 30 40
+20 35 21 35
+14 30 35 50
+1
+10 20 30 40
+3
+11 19 31 39
+12 38 13 37
+10 20 30 40
+
+expected output:
+1 2
+1 1
+1 1
+"""
+
 from collections import defaultdict
 
 
