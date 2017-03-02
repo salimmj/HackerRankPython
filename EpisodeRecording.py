@@ -30,7 +30,6 @@ for i in range(seasons):
 
 s = ddict2dict(s)
 
-
 class Tree(object):
     def __init__(self):
         self.live = None
@@ -40,27 +39,26 @@ class Tree(object):
 
 def isInRange(ep, rng):
     i = 0
-    while ep['start'] <= rng[i]['end']:
+    while i<len(rng) and ep['start'] <= rng[i]['end']:
         i += 1
 
-    if ep['end'] < rng[i + 1]['start']:
+    if i >= len(rng) or ep['end'] < rng[i]['start']:
         return True
-    else:
-        return False
 
-def getMaxInterval(root, i, j, length, rng=None):  # make root before calling
+    return False
+
+def getMaxInterval(root, i, j, length, rng=None):
     if j < length:
         if rng is None:
 
-            rng = []
-
+            rngl = []
+            rngr = []
             root.live = Tree()
-            print(j)
-            rngl = rng.append(s[i][j]['live'])
+            rngl.append(s[i][j]['live'])
             root.live.data = getMaxInterval(root.live, i, j+1, length, rngl)
 
             root.repeat = Tree()
-            rngr = rng.append(s[i][j]['repeat'])
+            rngr.append(s[i][j]['repeat'])
             root.repeat.data = getMaxInterval(root.repeat, i, j+1, length, rngr)
 
             ll = len(root.live.data)
@@ -68,7 +66,6 @@ def getMaxInterval(root, i, j, length, rng=None):  # make root before calling
 
             if ll > rl:
                 return root.live.data
-
             return root.repeat.data
         else:
             # recursiveness
@@ -90,7 +87,6 @@ def getMaxInterval(root, i, j, length, rng=None):  # make root before calling
 
                 if ll > rl:
                     return root.live.data
-
                 return root.repeat.data
 
             elif bl:
@@ -109,68 +105,7 @@ def getMaxInterval(root, i, j, length, rng=None):  # make root before calling
                 return root.repeat.data
 
             return rng
-
     return rng
-
-"""
-def getMaxInterval(root, i, j, length, rng=None):  # make root before calling
-    if rng is None:
-
-        rng = []
-
-        root.live = Tree()
-        print(j)
-        rngl = rng.append(s[i][j]['live'])
-        root.live.data = getMaxInterval(root.live, i, j+1, length, rngl)
-
-        root.repeat = Tree()
-        rngr = rng.append(s[i][j]['repeat'])
-        root.repeat.data = getMaxInterval(root.repeat, i, j+1, length, rngr)
-
-        return max(len(root.live.data), len(root.repeat.data))
-    else:
-        if j < length:
-            # recursiveness
-            bl = isInRange(s[i][j]['live'], rng)
-            br = isInRange(s[i][j]['repeat'], rng)
-            if bl and br:
-                root.live = Tree()
-                rngl = list(rng)
-                rngl.append(s[i][j]['live'])
-                root.live.data = getMaxInterval(root.live, i, j+1, length, rngl)
-
-                root.repeat = Tree()
-                rngr = list(rng)
-                rngr.append(s[i][j]['repeat'])
-                root.repeat.data = getMaxInterval(root.repeat, i, j+1, length, rngr)
-
-                ll = len(root.live.data)
-                rl = len(root.repeat.data)
-
-                if ll > rl:
-                    return root.live.data
-                else:
-                    return root.repeat.data
-
-            elif bl:
-                root.live = Tree()
-                rng.append(s[i][j]['live'])
-                sorted(rng, key=lambda epp: epp['start'])
-                root.live.data = getMaxInterval(root.live, i, j+1, length, rng)
-
-                return root.live.data
-            elif br:
-                root.repeat = Tree()
-                rng.append(s[i][j]['repeat'])
-                sorted(rng, key=lambda epp: epp['start'])
-                root.repeat.data = getMaxInterval(root.repeat, i, j+1, length, rng)
-
-                return root.repeat.data
-            else:
-                return rng
-
-        else:
-            return rng"""
 
 
 def findR(i, j, length, st=None):
@@ -208,10 +143,13 @@ for i in range(len(s)):
 
         rng = getMaxInterval(root, i, j, len(s[i]))
 
-        diffs.append(len(rng))
+        diffs.append(len(rng)-1)
 
     m = max(diffs)
+    print('diffs')
+    print(diffs)
     x = diffs.index(m)
+    print(x)
 
-    print('{x} {y}'.format(x=x + 1, y=x + m - 1))
+    print('{x} {y}'.format(x=x + 1, y=x +1+ m))
     diffs = []
